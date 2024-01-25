@@ -2,7 +2,7 @@
 
 public class Resizer : MonoBehaviour
 {
-    [SerializeField] float _speed;
+    [SerializeField] private float _speed;
 
     private void Update()
     {
