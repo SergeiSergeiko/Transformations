@@ -1,14 +1,14 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
-using UnityEngine.Events;
 
-[RequireComponent(typeof(TextViewer))]
 public class Counter : MonoBehaviour
 {
     private float _count;
     private float _numberIncrease = 1;
     private float _delay = 0.5f;
     private bool _isActive = false;
+    private Coroutine _coroutine = null;
 
     public float Count
     {
@@ -16,12 +16,23 @@ public class Counter : MonoBehaviour
 
         private set
         {
-            _count += value;
-            Changed?.Invoke();
+            _count = value;
+            CountChanged?.Invoke();
+        }
+    }
+    public bool IsActive
+    {
+        get => _isActive;
+
+        private set
+        {
+            _isActive = value;
+            ActiveChanged?.Invoke();
         }
     }
 
-    public UnityAction Changed;
+    public event Action CountChanged;
+    public event Action ActiveChanged;
 
     private void OnDisable()
     {
@@ -31,25 +42,34 @@ public class Counter : MonoBehaviour
     private void Start()
     {
         Count = 0;
-        StartCoroutine(CountIncrease());
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
-            _isActive = !_isActive;
+        {
+            IsActive = !IsActive;
+            RestartCoroutine(ref _coroutine, CountIncrease());
+        }
     }
 
     private IEnumerator CountIncrease()
     {
-        bool isOpen = true;
+        WaitForSeconds delay = new(_delay);
 
-        while (isOpen)
+        while (_isActive)
         {
-            yield return new WaitUntil(() => _isActive);
-            yield return new WaitForSeconds(_delay);
+            yield return delay;
 
-            Count = _numberIncrease;
+            Count += _numberIncrease;
         }
+    }
+
+    private void RestartCoroutine(ref Coroutine coroutine, IEnumerator method)
+    {
+        if (coroutine != null)
+            StopCoroutine(coroutine);
+
+        coroutine = StartCoroutine(method);
     }
 }
