@@ -4,17 +4,17 @@
 public class Cube : MonoBehaviour
 {
     [SerializeField] private ParticleSystem _dieEffect;
-    [SerializeField] private int _changeSplit;
+    [SerializeField] private int _chanceSplit;
 
     private Renderer _renderer;
 
     public event System.Action<Cube> Diying;
 
-    public int ChanceSplit { get => _changeSplit; }
+    public int ChanceSplit { get => _chanceSplit; }
 
     public void Init(Vector3 scale, int chanceSplit)
     {
-        _changeSplit = chanceSplit;
+        _chanceSplit = chanceSplit;
         gameObject.transform.localScale = scale;
     }
 
@@ -25,8 +25,7 @@ public class Cube : MonoBehaviour
         ChangeColorRandomly();
     }
 
-    private void OnMouseDown() =>
-        Destroy();
+    private void OnMouseDown() => Destroy();
 
     private void Destroy()
     {
