@@ -128,4 +128,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _dieEffect: {fileID: 6361304906324399332, guid: 50f9dbbeee4d4524ea1f3091f6ddf23f, type: 3}
-  _changeSplit: 100
+  _chanceSplit: 100

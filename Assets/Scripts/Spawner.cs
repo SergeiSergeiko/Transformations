@@ -2,21 +2,38 @@
 
 public class Spawner : MonoBehaviour
 {
-
+    [SerializeField] private Transform _defaultSpawnPoint;
     [SerializeField] private Cube _prefab;
     [SerializeField] private Exploder _exploder;
     [SerializeField] private int _deviderScale;
     [SerializeField] private int _deviderSplit;
-    [SerializeField] private int _maxCountSplitCubes;
-    [SerializeField, Min(0)] private int _minCountSplitCubes;
+    [SerializeField, Min(0)] private int _minNumberSplitCubes;
+    [SerializeField] private int _maxNumberSplitCubes;
+    [SerializeField] private int _initialNumberCubes;
 
     private void OnValidate()
     {
-        if (_minCountSplitCubes >= _maxCountSplitCubes)
-            _maxCountSplitCubes = _minCountSplitCubes + 1;
+        if (_minNumberSplitCubes >= _maxNumberSplitCubes)
+            _maxNumberSplitCubes = _minNumberSplitCubes + 1;
     }
 
-    public void Spawn(Cube cube, Vector3 position) => cube.transform.position = position;
+    private void Start()
+    {
+        for (int i = 0; i < _initialNumberCubes; i++)
+        {
+            Spawn(_defaultSpawnPoint.transform.position, 
+                _prefab.transform.localScale, _prefab.ChanceSplit);
+        }
+    }
+
+    private void Spawn(Vector3 position, Vector3 scale, int chanceSplit)
+    {
+        Cube cube = Instantiate(_prefab, position, Quaternion.identity);
+        cube.Init(scale, chanceSplit);
+        cube.Diying += SplitUp;
+
+        _exploder.BlowUp(cube);
+    }
 
     private void SplitUp(Cube cube)
     {
@@ -30,20 +47,7 @@ public class Spawner : MonoBehaviour
         Vector3 scale = cube.transform.localScale / _deviderScale;
 
         for (int i = 0; i < randomCountCubes; i++)
-        {
-            Cube newCube = CreateCube(scale, chanceSplit);
-            Spawn(newCube, cube.transform.position);
-            _exploder.BlowUp(newCube);
-        }
-    }
-
-    private Cube CreateCube(Vector3 scale, int chanceSplit)
-    {
-        Cube cube = Instantiate(_prefab);
-        cube.Init(scale, chanceSplit);
-        cube.Diying += SplitUp;
-
-        return cube;
+            Spawn(cube.transform.position, scale, chanceSplit);
     }
 
     private bool CanSplit(int chanceSplit)
@@ -55,5 +59,5 @@ public class Spawner : MonoBehaviour
         return randomNumber <= chanceSplit;
     }
 
-    private int GetRandomCountCubes() => Random.Range(_minCountSplitCubes, _maxCountSplitCubes);
+    private int GetRandomCountCubes() => Random.Range(_minNumberSplitCubes, _maxNumberSplitCubes);
 }
