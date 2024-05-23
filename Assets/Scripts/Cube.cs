@@ -1,16 +1,22 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(Renderer))]
 public class Cube : MonoBehaviour
 {
-    [SerializeField] private float _explosionForce;
-    [SerializeField] private float _explosionRadius;
     [SerializeField] private ParticleSystem _dieEffect;
+    [SerializeField] private int _changeSplit;
 
     private Renderer _renderer;
 
-    public event Action<Cube, Vector3> Destroying;
+    public event System.Action<Cube> Diying;
+
+    public int ChanceSplit { get => _changeSplit; }
+
+    public void Init(Vector3 scale, int chanceSplit)
+    {
+        _changeSplit = chanceSplit;
+        gameObject.transform.localScale = scale;
+    }
 
     private void Start()
     {
@@ -19,15 +25,12 @@ public class Cube : MonoBehaviour
         ChangeColorRandomly();
     }
 
-    private void OnMouseDown()
-    {
+    private void OnMouseDown() =>
         Destroy();
-    }
 
     private void Destroy()
     {
-        Destroying?.Invoke(this, transform.localScale);
-        Explode();
+        Diying?.Invoke(this);
         StartDieEffect();
         Destroy(gameObject);
     }
@@ -40,9 +43,9 @@ public class Cube : MonoBehaviour
 
     private void ChangeColorRandomly()
     {
-        float red = UnityEngine.Random.Range(0f, 1f);
-        float green = UnityEngine.Random.Range(0f, 1f);
-        float blue = UnityEngine.Random.Range(0f, 1f);
+        float red = Random.Range(0f, 1f);
+        float green = Random.Range(0f, 1f);
+        float blue = Random.Range(0f, 1f);
 
         _renderer.material.color = new Color(red, green, blue);
     }
@@ -51,14 +54,5 @@ public class Cube : MonoBehaviour
     {
         ParticleSystem.MainModule mainModule = particleSystem.main;
         mainModule.startColor = color;
-    }
-
-    private void Explode()
-    {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, _explosionRadius);
-
-        foreach (var collider in colliders)
-            collider.attachedRigidbody?.AddExplosionForce(_explosionForce,
-                transform.position, _explosionRadius);
     }
 }
