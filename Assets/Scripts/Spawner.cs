@@ -40,13 +40,17 @@ public class Spawner : MonoBehaviour
         cube.Diying -= SplitUp;
 
         if (CanSplit(cube.ChanceSplit) == false)
-            return;
+        {
+            _exploder.Explode(cube);
 
-        int randomCountCubes = GetRandomCountCubes();
+            return;
+        }
+
+        int randomNumberCubes = GetRandomNumberCubes();
         int chanceSplit = cube.ChanceSplit / _deviderSplit;
         Vector3 scale = cube.transform.localScale / _deviderScale;
 
-        for (int i = 0; i < randomCountCubes; i++)
+        for (int i = 0; i < randomNumberCubes; i++)
             Spawn(cube.transform.position, scale, chanceSplit);
     }
 
@@ -59,5 +63,5 @@ public class Spawner : MonoBehaviour
         return randomNumber <= chanceSplit;
     }
 
-    private int GetRandomCountCubes() => Random.Range(_minNumberSplitCubes, _maxNumberSplitCubes);
+    private int GetRandomNumberCubes() => Random.Range(_minNumberSplitCubes, _maxNumberSplitCubes);
 }

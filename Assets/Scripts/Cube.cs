@@ -3,7 +3,6 @@
 [RequireComponent(typeof(Renderer))]
 public class Cube : MonoBehaviour
 {
-    [SerializeField] private ParticleSystem _dieEffect;
     [SerializeField] private int _chanceSplit;
 
     private Renderer _renderer;
@@ -30,14 +29,7 @@ public class Cube : MonoBehaviour
     private void Destroy()
     {
         Diying?.Invoke(this);
-        StartDieEffect();
         Destroy(gameObject);
-    }
-
-    private void StartDieEffect()
-    {
-        ChangeColorEffect(_dieEffect, _renderer.material.color);
-        Instantiate(_dieEffect, transform.position, Quaternion.identity);
     }
 
     private void ChangeColorRandomly()
@@ -47,11 +39,5 @@ public class Cube : MonoBehaviour
         float blue = Random.Range(0f, 1f);
 
         _renderer.material.color = new Color(red, green, blue);
-    }
-
-    private void ChangeColorEffect(ParticleSystem particleSystem, Color color)
-    {
-        ParticleSystem.MainModule mainModule = particleSystem.main;
-        mainModule.startColor = color;
     }
 }
